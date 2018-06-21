@@ -30,6 +30,56 @@ class TestCase(unittest.TestCase):
     def test_no_integers(self):
         self.assert_extract("no integers", library.integers)
 
+    # Prove that library can extract date
+    def test_correct_data_extract(self):
+        self.assert_extract("I was born on 2015-07-25.", library.dates_iso8601, "2015-07-25")
+
+    # Test that date is valid (the middle number in the date is greater than 12 and 
+    # the final number in the date is greater than 31)
+    def test_valid_date_limits(self):
+        self.assert_extract("I was born on 2015-13-25.", library.dates_iso8601)
+        self.assert_extract("I was born on 2015-07-32.", library.dates_iso8601)
+        self.assert_extract("I was born on 2015-13-32.", library.dates_iso8601)
+
+    # Prove that we can exctract date with 'str' as month
+    def test_extract_date_with_str_month(self):
+        self.assert_extract("I was born on 25 Jan 2015.", library.dates_month_str, "25 Jan 2015")
+
+    def test_extract_date_with_time_milliseconds(self):
+        self.assert_extract("I was born on 2018-06-22 18:22:19.123.", library.dates_iso8601, "2018-06-22 18:22:19.123")
+
+    def test_extract_date_with_time_seconds_only(self):
+        self.assert_extract("I was born on 2018-06-22 18:22:19.", library.dates_iso8601, "2018-06-22 18:22:19")
+
+    def test_extract_date_with_time_minutes_only(self):
+        self.assert_extract("I was born on 2018-06-22 18:22.", library.dates_iso8601, "2018-06-22 18:22")
+
+    def test_extract_date_with_time_and_t_as_delimeter(self):
+        self.assert_extract("I was born on 2018-06-22T18:22:19.123.", library.dates_iso8601, "2018-06-22T18:22:19.123")
+	
+    def test_extract_date_with_time_timezone_as_MDT(self):
+        self.assert_extract("I was born on 2018-06-22 18:22:19.123MDT.", library.dates_iso8601, "2018-06-22 18:22:19.123MDT")
+
+    def test_extract_date_with_time_timezone_as_Z(self):
+        self.assert_extract("I was born on 2018-06-22 18:22:19.123Z.", library.dates_iso8601, "2018-06-22 18:22:19.123Z")
+
+    def test_extract_date_with_time_timezone_as_offset(self):
+        self.assert_extract("I was born on 2018-06-22 18:22:19.123-0800.", library.dates_iso8601, "2018-06-22 18:22:19.123-0800")
+
+    def test_extract_date_with_time_timezone_as_MDT_t_as_delimeter(self):
+        self.assert_extract("I was born on 2018-06-22T18:22:19.123MDT.", library.dates_iso8601, "2018-06-22T18:22:19.123MDT")
+
+    def test_extract_date_with_time_timezone_as_Z_t_as_delimeter(self):
+        self.assert_extract("I was born on 2018-06-22T18:22:19.123Z.", library.dates_iso8601, "2018-06-22T18:22:19.123Z")
+
+    def test_extract_date_with_time_timezone_as_offset_t_as_delimeter(self):
+        self.assert_extract("I was born on 2018-06-22T18:22:19.123-0800.", library.dates_iso8601, "2018-06-22T18:22:19.123-0800")
+
+    def test_extract_date_with_str_month_and_comma_as_separator(self):
+        self.assert_extract("I was born on 25 Jun, 2017", library.dates_month_str, "25 Jun, 2017")
+
+    def test_integers_comma_separeted(self):
+        self.assert_extract("Some text and 123,456,789", library.integers, '123', '456', '789')
 
 if __name__ == '__main__':
     unittest.main()
